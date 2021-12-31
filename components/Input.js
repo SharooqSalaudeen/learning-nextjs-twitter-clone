@@ -2,6 +2,7 @@ import { CalendarIcon, ChartBarIcon, EmojiHappyIcon, PhotographIcon, XIcon } fro
 import { useRef, useState } from "react";
 import "emoji-mart/css/emoji-mart.css";
 import { Picker } from "emoji-mart";
+import { useSession } from "next-auth/react";
 
 //Firebase functions
 import { db, storage } from "../firebase";
@@ -14,19 +15,22 @@ function Input() {
   const [showEmojis, setShowEmojis] = useState(false);
   const [loading, setLoading] = useState(false);
   const filePickerRef = useRef(null);
+  const { data: session } = useSession();
 
   const sendPost = async () => {
     if (loading) return;
     setLoading(true);
 
     const docRef = await addDoc(collection(db, "posts"), {
-      // id: session.user.uid,
-      // username: session.user.name,
-      // userImg: session.user.image,
-      // tag: session.user.tag,
+      id: session.user.uid,
+      username: session.user.name,
+      userImg: session.user.image,
+      tag: session.user.tag,
       text: input,
       timestamp: serverTimestamp(),
     });
+
+    console.log("doc ref id ", docRef.id);
 
     const imageRef = ref(storage, `posts/${docRef.id}/image`);
 
@@ -66,7 +70,7 @@ function Input() {
 
   return (
     <div className={`border-b border-gray-700 p-3 flex space-x-3 overflow-y-scroll ${loading && "opacity-60"} `}>
-      <img src="" alt="" className="h-11 w-11 rounded-full cursor-pointer" />
+      <img src={session.user.image} alt="" className="h-11 w-11 rounded-full cursor-pointer" />
       <div className="w-full divide-y divide-gray-700">
         <div className={`${selectedFile && "pb-7"} ${input && "space-y-2.5"}`}>
           <textarea

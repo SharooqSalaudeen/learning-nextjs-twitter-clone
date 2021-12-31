@@ -6,6 +6,7 @@ import Sidebar from "../components/Sidebar";
 //Next Auth
 import { getProviders, getSession, useSession } from "next-auth/react";
 import Login from "../components/Login";
+import Modal from "../components/Modal";
 
 export async function getServerSideProps(context) {
   const trendingResults = await fetch("https://jsonkeeper.com/b/NKEV").then((res) => res.json());
@@ -24,7 +25,6 @@ export async function getServerSideProps(context) {
 }
 export default function Home({ trendingResults, followResults, providers }) {
   const { data: session } = useSession();
-  console.log("session", session);
 
   if (!session) return <Login providers={providers}></Login>;
 
@@ -39,6 +39,7 @@ export default function Home({ trendingResults, followResults, providers }) {
       <main className="bg-black min-h-screen flex max-w-[1500px] mx-auto">
         <Sidebar />
         <Feed />
+        <Modal />
       </main>
     </div>
   );
